@@ -33,7 +33,11 @@
 // Якщо запит був успішний, під селектом у блоці div.cat-info з'являється зображення і розгорнута інформація про кота:
 // назва породи, опис і темперамент.
 
-// Опрацювання стану завантаження
+// ---------------------------------------------------------------------------
+
+//
+
+// !!!!!------ Опрацювання стану завантаження
 // Поки відбувається будь-який HTTP-запит, необхідно показувати завантажувач - елемент p.loader.
 // Поки запитів немає або коли запит завершився, завантажувач необхідно приховувати. Використовуй для цього додаткові CSS класи.
 
@@ -58,52 +62,114 @@
 
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SlimSelect from 'slim-select';
+import 'slim-select/dist/slimselect.css';
 
 import { fetchBreeds, fetchCatByBreed, fetchImageCatByBreed } from './cat-api';
 
-// new SlimSelect({
-//   select: '#single'
-// })
-
 const refs = {
-    selectCat: document.querySelector('.breed-select'),
-  };
-  
-  refs.selectCat.addEventListener('input', handlerUserChoiceCat);
+  selectCat: document.querySelector('.breed-select'),
+  sectionUserChoiceCat: document.querySelector('.cat-info'),
+  loader: document.querySelector('span.loader'),
+};
 
+// console.log();
 
-  function handlerUserChoiceCat(e) {
-    console.log('i worked');
-  
-    console.log(fetchCatByBreed(e.target.value));
-    const imageId = fetchCatByBreed(e.target.value).reference_image_id;
-    console.log(fetchCatByBreed(e.target.value));
-    console.log(
-      fetchImageCatByBreed(imageId).catch(error => {
-        Notify.failure('Oops! Something went wrong! Try reloading the page!');
-        console.log(error);
-      })
-    );
-    console.log(e.target.value);
-  }
+const catDescription = {
+  breed: '',
+  description: '',
+  temperament: '',
+  url: '',
+};
 
+// функція з обробки промісу запиту даних з переліку порід. На основі цих даних викликає функції по створенню розмітки селектору,
+// виклику тоглу для додавання / знімання класу, створення нового SlimSelect.
+fetchBreeds()
+  .then(data => {
+    createSelectorCat(data);
+    toggleClassListTheLoader();
+    createNewSlimSelect();
+  })
+  .catch(onFetchError);
 
-  fetchBreeds()
-  .then(createSelectorCat)
-  .catch(error => {
-    Notify.failure('Oops! Something went wrong! Try reloading the page!');
-    console.log(error);
+// функція, що додає / прибирає клас 'loader'
+function toggleClassListTheLoader() {
+  refs.loader.classList.toggle('loader');
+}
+
+// функція що створює новий SlimSelect
+function createNewSlimSelect() {
+  new SlimSelect({
+    select: '#selectElement',
+    events: {
+      afterChange: newVal => {
+        toggleClassListTheLoader();
+        resetSectionUserChoiceCat();
+        createSectionUserChoiceCat(newVal[0].value);
+      },
+    },
   });
+}
 
+// функція, яка  запитує у сервера картку з catId, обробляє проміс та виконує запит на сервер для отримання зображення вибраного кота
+function createSectionUserChoiceCat(catId) {
+  const catUrlID = fetchCatByBreed(catId)
+    .then(data => {
+      updatecatDescriptionObj(data);
+      return fetchImageCatByBreed(data.reference_image_id);
+    })
+    .catch(onFetchError);
+
+  catUrlID
+    .then(data => {
+      toggleClassListTheLoader();
+      createMarkupUserChoiceCat(data.url);
+    })
+    .catch(onFetchError);
+}
+
+// функція з оновлення обєкту з даними які будуть використані при заповненні секції вибраного користувачем кота.
+function updatecatDescriptionObj(obj) {
+  catDescription.breed = obj.name;
+  catDescription.description = obj.description;
+  catDescription.temperament = obj.temperament;
+}
+
+// функція з очистки секції відображення опису та фотографії вибраного користувачем кота
+function resetSectionUserChoiceCat() {
+  refs.sectionUserChoiceCat.innerHTML = '';
+}
+
+// функція, яка вставляє шаблонну стоку розмітки секції відображення опису та фотографії вибраного користувачем кота
+function createMarkupUserChoiceCat(url) {
+  refs.sectionUserChoiceCat.innerHTML = `<img src="${url}" alt="cat breed ${catDescription.breed} " width="300">
+   <div class="wrapper-description">
+     <h2 class="cat-info-title">${catDescription.breed}</h2>
+     <p class="cat-info-description">${catDescription.description}</p>
+     <p class="cat-info-haracteristic"><span class="cat-info-haracteristic-title">Temperament: </span>${catDescription.temperament}</p>
+   </div>`;
+}
+
+// функція, яка вставляє строку розмітки селестора в DOM
 function createSelectorCat(arr) {
   const markup = createMarkupSelectCat(arr);
   refs.selectCat.innerHTML = markup;
 }
 
+// функція, що створює строку розмітки селектора вибору порід котів
 function createMarkupSelectCat(arr) {
-  let str = '';
+  let str = `<option value=""></option>`;
   for (const key of arr) {
     str += `<option value="${key.id}">${key.name}</option>`;
   }
   return str;
+}
+
+// функція, що відобажає помилки
+function onFetchError(error) {
+  Notify.failure('Oops! Something went wrong! Try reloading the page!', {
+    width: '350px',
+    position: 'center-top',
+    fontSize: '16px',
+  });
+  console.log(error);
 }
