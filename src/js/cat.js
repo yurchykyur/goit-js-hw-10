@@ -112,12 +112,10 @@ function createNewSlimSelect() {
 
 // функція, яка  запитує у сервера картку з catId, обробляє проміс та виконує запит на сервер для отримання зображення вибраного кота
 function createSectionUserChoiceCat(catId) {
-  const catUrlID = fetchCatByBreed(catId)
-    .then(data => {
-      updatecatDescriptionObj(data);
-      return fetchImageCatByBreed(data.reference_image_id);
-    })
-    .catch(onFetchError);
+  const catUrlID = fetchCatByBreed(catId).then(data => {
+    updatecatDescriptionObj(data);
+    return fetchImageCatByBreed(data.reference_image_id);
+  });
 
   catUrlID
     .then(data => {
