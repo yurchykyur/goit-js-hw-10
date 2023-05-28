@@ -1,9 +1,4 @@
 export function fetchBreeds() {
-  // console.log(
-  //   fetch('https://api.thecatapi.com/v1/breeds').then(response =>
-  //     response.json()
-  //   )
-  // );
   return fetch('https://api.thecatapi.com/v1/breeds', options).then(resp =>
     resp.json()
   );

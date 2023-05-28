@@ -33,11 +33,6 @@
 // Якщо запит був успішний, під селектом у блоці div.cat-info з'являється зображення і розгорнута інформація про кота:
 // назва породи, опис і темперамент.
 
-// ---------------------------------------------------------------------------
-
-//
-
-// !!!!!------ Опрацювання стану завантаження
 // Поки відбувається будь-який HTTP-запит, необхідно показувати завантажувач - елемент p.loader.
 // Поки запитів немає або коли запит завершився, завантажувач необхідно приховувати. Використовуй для цього додаткові CSS класи.
 
@@ -72,8 +67,6 @@ const refs = {
   loader: document.querySelector('span.loader'),
 };
 
-// console.log();
-
 const catDescription = {
   breed: '',
   description: '',
@@ -81,8 +74,10 @@ const catDescription = {
   url: '',
 };
 
-// функція з обробки промісу запиту даних з переліку порід. На основі цих даних викликає функції по створенню розмітки селектору,
-// виклику тоглу для додавання / знімання класу, створення нового SlimSelect.
+/**
+ * a function for processing a request for data from the list of breeds. Based on this data,
+ * it calls functions for creating selector markup, calling a toggle for adding/removing a class, creating a new SlimSelect.
+ */
 fetchBreeds()
   .then(data => {
     createSelectorCat(data);
@@ -91,12 +86,16 @@ fetchBreeds()
   })
   .catch(onFetchError);
 
-// функція, що додає / прибирає клас 'loader'
+/**
+ * function that adds/removes the 'loader' class
+ */
 function toggleClassListTheLoader() {
   refs.loader.classList.toggle('loader');
 }
 
-// функція що створює новий SlimSelect
+/**
+ * function that creates a new SlimSelect
+ */
 function createNewSlimSelect() {
   new SlimSelect({
     select: '#selectElement',
@@ -110,7 +109,11 @@ function createNewSlimSelect() {
   });
 }
 
-// функція, яка  запитує у сервера картку з catId, обробляє проміс та виконує запит на сервер для отримання зображення вибраного кота
+/**
+ * a function that asks the server for a card with catId,
+ * processes the bid and makes a request to the server to get an image of the selected cat
+ * @param {String} catId id of the image
+ */
 function createSectionUserChoiceCat(catId) {
   const catUrlID = fetchCatByBreed(catId).then(data => {
     updatecatDescriptionObj(data);
@@ -125,19 +128,27 @@ function createSectionUserChoiceCat(catId) {
     .catch(onFetchError);
 }
 
-// функція з оновлення обєкту з даними які будуть використані при заповненні секції вибраного користувачем кота.
+/**
+ * function for updating the object with data that will be used when filling the section of the cat selected by the user.
+ * @param {Object} obj
+ */
 function updatecatDescriptionObj(obj) {
   catDescription.breed = obj.name;
   catDescription.description = obj.description;
   catDescription.temperament = obj.temperament;
 }
 
-// функція з очистки секції відображення опису та фотографії вибраного користувачем кота
+/**
+ * function to clear the section displaying the description and photo of the cat selected by the user
+ */
 function resetSectionUserChoiceCat() {
   refs.sectionUserChoiceCat.innerHTML = '';
 }
 
-// функція, яка вставляє шаблонну стоку розмітки секції відображення опису та фотографії вибраного користувачем кота
+/**
+ * function that inserts a template flow of section markup to display the description and photo of the cat selected by the user
+ * @param {String} url url adress of the cat image
+ */
 function createMarkupUserChoiceCat(url) {
   refs.sectionUserChoiceCat.innerHTML = `<img src="${url}" alt="cat breed ${catDescription.breed} " width="300">
    <div class="wrapper-description">
@@ -147,13 +158,20 @@ function createMarkupUserChoiceCat(url) {
    </div>`;
 }
 
-// функція, яка вставляє строку розмітки селестора в DOM
+/**
+ * a function that inserts a celestor markup term into the DOM
+ * @param {Array} arr
+ */
 function createSelectorCat(arr) {
   const markup = createMarkupSelectCat(arr);
   refs.selectCat.innerHTML = markup;
 }
 
-// функція, що створює строку розмітки селектора вибору порід котів
+/**
+ * a function that creates a markup period for the cat breed selector
+ * @param {Object} arr
+ * @returns a string with markup for the DOM
+ */
 function createMarkupSelectCat(arr) {
   let str = `<option value=""></option>`;
   for (const key of arr) {
@@ -162,7 +180,10 @@ function createMarkupSelectCat(arr) {
   return str;
 }
 
-// функція, що відобажає помилки
+/**
+ * a function that displays errors in a popup message
+ * @param {Error} error
+ */
 function onFetchError(error) {
   Notify.failure('Oops! Something went wrong! Try reloading the page!', {
     width: '350px',
