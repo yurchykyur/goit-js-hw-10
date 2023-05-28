@@ -4,8 +4,8 @@ export function fetchBreeds() {
   //     response.json()
   //   )
   // );
-  return fetch('https://api.thecatapi.com/v1/breeds', options).then(response =>
-    response.json()
+  return fetch('https://api.thecatapi.com/v1/breeds', options).then(resp =>
+    resp.json()
   );
 }
 
@@ -18,12 +18,17 @@ const options = {
 
 export function fetchCatByBreed(breedId) {
   return fetch(`https://api.thecatapi.com/v1/breeds/${breedId}`, options).then(
-    response => response.json()
+    resp => resp.json()
   );
 }
 
 export function fetchImageCatByBreed(imageId) {
   return fetch(`https://api.thecatapi.com/v1/images/${imageId}`, options).then(
-    response => response.json()
+    resp => {
+      if (!resp.ok) {
+        throw new Error(response.statusText);
+      }
+      return resp.json();
+    }
   );
 }
