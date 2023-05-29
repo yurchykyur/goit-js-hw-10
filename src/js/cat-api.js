@@ -8,10 +8,14 @@ const options = {
 /**
  * the function requests a list of cat breeds from an external server
  */
-export function fetchBreeds() {
-  return fetch('https://api.thecatapi.com/v1/breeds', options).then(resp =>
-    resp.json()
-  );
+// export function fetchBreeds() {
+//   return fetch('https://api.thecatapi.com/v1/breeds', options).then(resp =>
+//     resp.json()
+//   );
+// }
+export async function fetchBreeds() {
+  const resp = await fetch('https://api.thecatapi.com/v1/breeds', options);
+  return await resp.json();
 }
 
 /**
@@ -19,10 +23,18 @@ export function fetchBreeds() {
  * @param {String} breedId id of cats breed
  * @returns the object of the breed of the cat upon request to the external server by the Id of the breed
  */
-export function fetchCatByBreed(breedId) {
-  return fetch(`https://api.thecatapi.com/v1/breeds/${breedId}`, options).then(
-    resp => resp.json()
+// export function fetchCatByBreed(breedId) {
+//   return fetch(`https://api.thecatapi.com/v1/breeds/${breedId}`, options).then(
+//     resp => resp.json()
+//   );
+// }
+
+export async function fetchCatByBreed(breedId) {
+  const resp = await fetch(
+    `https://api.thecatapi.com/v1/breeds/${breedId}`,
+    options
   );
+  return await resp.json();
 }
 
 /**
@@ -30,13 +42,24 @@ export function fetchCatByBreed(breedId) {
  * @param {String} imageId ID photo of a cat
  * @returns  the query promise
  */
-export function fetchImageCatByBreed(imageId) {
-  return fetch(`https://api.thecatapi.com/v1/images/${imageId}`, options).then(
-    resp => {
-      if (!resp.ok) {
-        throw new Error(response.statusText);
-      }
-      return resp.json();
-    }
+// export function fetchImageCatByBreed(imageId) {
+//   return fetch(`https://api.thecatapi.com/v1/images/${imageId}`, options).then(
+//     resp => {
+//       if (!resp.ok) {
+//         throw new Error(response.statusText);
+//       }
+//       return resp.json();
+//     }
+//   );
+// }
+
+export async function fetchImageCatByBreed(imageId) {
+  const resp = await fetch(
+    `https://api.thecatapi.com/v1/images/${imageId}`,
+    options
   );
+  if (!resp.ok) {
+    throw new Error(response.statusText);
+  }
+  return await resp.json();
 }
