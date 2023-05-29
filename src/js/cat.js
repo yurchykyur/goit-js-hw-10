@@ -128,6 +128,22 @@ function createSectionUserChoiceCat(catId) {
     .catch(onFetchError);
 }
 
+// async function createSectionUserChoiceCat(catId) {
+//   try {
+//     const catByBreed = await fetchCatByBreed(catId);
+//     updatecatDescriptionObj(catByBreed);
+//     const catUrlID = fetchImageCatByBreed(catByBreed.reference_image_id);
+//     toggleClassListTheLoader();
+//     createMarkupUserChoiceCat(catUrlID.url);
+//     // catUrlID.then(data => {
+//     //   toggleClassListTheLoader();
+//     //   createMarkupUserChoiceCat(data.url);
+//     // });
+//   } catch (error) {
+//     onFetchError;
+//   }
+// }
+
 /**
  * function for updating the object with data that will be used when filling the section of the cat selected by the user.
  * @param {Object} obj
