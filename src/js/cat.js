@@ -114,35 +114,31 @@ function createNewSlimSelect() {
  * processes the bid and makes a request to the server to get an image of the selected cat
  * @param {String} catId id of the image
  */
-function createSectionUserChoiceCat(catId) {
-  const catUrlID = fetchCatByBreed(catId).then(data => {
-    updatecatDescriptionObj(data);
-    return fetchImageCatByBreed(data.reference_image_id);
-  });
+// function createSectionUserChoiceCat(catId) {
+//   const catUrlID = fetchCatByBreed(catId).then(data => {
+//     updatecatDescriptionObj(data);
+//     return fetchImageCatByBreed(data.reference_image_id);
+//   });
 
-  catUrlID
-    .then(data => {
-      toggleClassListTheLoader();
-      createMarkupUserChoiceCat(data.url);
-    })
-    .catch(onFetchError);
-}
-
-// async function createSectionUserChoiceCat(catId) {
-//   try {
-//     const catByBreed = await fetchCatByBreed(catId);
-//     updatecatDescriptionObj(catByBreed);
-//     const catUrlID = fetchImageCatByBreed(catByBreed.reference_image_id);
-//     toggleClassListTheLoader();
-//     createMarkupUserChoiceCat(catUrlID.url);
-//     // catUrlID.then(data => {
-//     //   toggleClassListTheLoader();
-//     //   createMarkupUserChoiceCat(data.url);
-//     // });
-//   } catch (error) {
-//     onFetchError;
-//   }
+//   catUrlID
+//     .then(data => {
+//       toggleClassListTheLoader();
+//       createMarkupUserChoiceCat(data.url);
+//     })
+//     .catch(onFetchError);
 // }
+
+async function createSectionUserChoiceCat(catId) {
+  try {
+    const catByBreed = await fetchCatByBreed(catId);
+    updatecatDescriptionObj(catByBreed);
+    const catUrlID = await fetchImageCatByBreed(catByBreed.reference_image_id);
+    toggleClassListTheLoader();
+    createMarkupUserChoiceCat(catUrlID.url);
+  } catch (error) {
+    onFetchError();
+  }
+}
 
 /**
  * function for updating the object with data that will be used when filling the section of the cat selected by the user.
